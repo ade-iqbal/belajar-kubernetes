@@ -19,17 +19,17 @@ spec:
     spec:
       affinity:
         nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: node-role.kubernetes.io/master
-                  operator: In
-                  values:
-                    - true
-                - key: node-role.kubernetes.io/control-plane
-                  operator: In
-                  values:
-                    - true
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: NotIn
+                    values:
+                      - "true"
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: NotIn
+                    values:
+                      - "true"
       containers:
         - name: mysql
           image: mysql:8.0
