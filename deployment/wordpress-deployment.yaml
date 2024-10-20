@@ -10,25 +10,25 @@ spec:
     matchLabels:
       app: wordpress
       tier: frontend
-  affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: node-role.kubernetes.io/master
-              operator: In
-              values:
-                - true
-            - key: node-role.kubernetes.io/control-plane
-              operator: In
-              values:
-                - true
   template:
     metadata:
       labels:
         app: wordpress
         tier: frontend
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                      - "true"
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: In
+                    values:
+                      - "true"
       containers:
         # - image: wordpress:php8.3-apache
         - image: wordpress:6.2.1-apache
