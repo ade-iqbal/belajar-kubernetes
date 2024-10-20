@@ -10,22 +10,6 @@ spec:
     matchLabels:
       app: wordpress
       tier: frontend
-<<<<<<< HEAD
-=======
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: In
-                values:
-                  - true
-              - key: node-role.kubernetes.io/control-plane
-                operator: In
-                values:
-                  - true
->>>>>>> d497801723695162030be5893f3951a06c1ee48c
   template:
     metadata:
       labels:
