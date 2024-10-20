@@ -1,29 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: wordpress
-    labels:
-        app: wordpress
+  name: wordpress
+  labels:
+    app: wordpress
 spec:
-    replicas: 3
-    selector:
-        matchLabels:
-            app: wordpress
-            tier: frontend
-    template:
-        metadata:
-            labels:
-                app: wordpress
-                tier: frontend
-        spec:
-            containers:
-                # - image: wordpress:php8.3-apache
-                - image: wordpress:6.2.1-apache
-                  name: wordpress
-                  envFrom:
-                      - configMapRef:
-                            name: wordpress-configmaps
-                      - secretRef:
-                            name: wordpress-secret
-                  ports:
-                      - containerPort: 80
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: In
+              values:
+                - true
+            - key: node-role.kubernetes.io/control-plane
+              operator: In
+              values:
+                - true
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:
+        # - image: wordpress:php8.3-apache
+        - image: wordpress:6.2.1-apache
+          name: wordpress
+          envFrom:
+            - configMapRef:
+                name: wordpress-configmaps
+            - secretRef:
+                name: wordpress-secret
+          ports:
+            - containerPort: 80

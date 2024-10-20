@@ -1,36 +1,49 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-    name: wordpress-mysql
-    labels:
-        app: wordpress
+  name: wordpress-mysql
+  labels:
+    app: wordpress
 spec:
-    selector:
-        matchLabels:
-            app: wordpress
-            tier: mysql
-    serviceName: mysql-svc
-    replicas: 1
-    template:
-        metadata:
-            labels:
-                app: wordpress
-                tier: mysql
-        spec:
-            containers:
-                - name: mysql
-                  image: mysql:8.0
-                  ports:
-                      - containerPort: 3306
-                  envFrom:
-                      - configMapRef:
-                            name: mysql-configmaps
-                      - secretRef:
-                            name: mysql-secret
-                  volumeMounts:
-                      - name: mysql-pvc
-                        mountPath: /app/mysql
-            volumes:
-                - name: mysql-pvc
-                  persistentVolumeClaim:
-                      claimName: mysql-pvc
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
+  serviceName: mysql-svc
+  replicas: 1
+  affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: In
+              values:
+                - true
+            - key: node-role.kubernetes.io/control-plane
+              operator: In
+              values:
+                - true
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: mysql-configmaps
+            - secretRef:
+                name: mysql-secret
+          volumeMounts:
+            - name: mysql-pvc
+              mountPath: /app/mysql
+      volumes:
+        - name: mysql-pvc
+          persistentVolumeClaim:
+            claimName: mysql-pvc
